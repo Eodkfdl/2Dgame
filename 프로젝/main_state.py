@@ -60,13 +60,18 @@ class Monster1 :
         self.x, self.y = 500,150
         self.crush=0
         self.frame = 0
+        self.frame2=0
         if Monster1.image == None:
             Monster1.image = load_image('monster1.png')
 
     def draw(self):
         self.image.clip_draw(self.frame * 32, 0, 30, 64, self.x, self.y,80,120)
     def update(self):
-       self.frame=(self.frame+1)%3
+        self.frame2+=1
+        if(self.frame2==10):
+            self.frame=(self.frame+1)%3
+            self.frame2=0
+
 
 
 class Player:
