@@ -29,6 +29,8 @@ class Player:
         self.eatn=0
         self.jump =0
         self.Jumpstat=0
+        self.Tearsx=0
+        self.Tearsy=0
         if Player.image == None:
             Player.image = load_image('image\\isaac.png')
         if Player.eat_sound == None:

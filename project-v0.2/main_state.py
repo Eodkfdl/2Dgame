@@ -1,6 +1,7 @@
 from pico2d import *
 
 import game_framework
+from tears import Tears
 from background import Stage1
 from player import Player
 from boy import Boy # import Boy class from boy.py
@@ -10,16 +11,17 @@ from grass import Grass
 
 
 name = "main_state"
-
+tears=None
 boy = None
 balls = None
 big_balls = None
 grass = None
 background=None
 def create_world():
-    global boy, grass, balls, big_balls,background,player
+    global boy, grass, balls,background,player,tears
     player=Player()
-    background = Stage1()
+    tears = []
+    background = Stage1(800,600)
     big_balls = [BigBall() for i in range(10)]
     balls = [Ball() for i in range(10)]
     balls = big_balls + balls
@@ -36,7 +38,7 @@ def destroy_world():
 
 
 def enter():
-    open_canvas()
+    open_canvas(800,600)
     hide_cursor()
     game_framework.reset_time()
     create_world()
@@ -65,6 +67,18 @@ def handle_events(frame_time):
                 game_framework.quit()
             else:
                 player.handle_event(event)
+        if event.type==SDL_KEYDOWN and event.key== SDLK_SPACE:
+
+             player.Tearsy = player.y+20
+             if player.state in (player.RIGHT_STAND, player.RIGHT_RUN):
+                player.Tearsx = player.x+(10*player.dir)
+                tears.append(Tears(player.Tearsx,player.Tearsy,1))
+
+             if player.state in (player.LEFT_STAND, player.LEFT_RUN):
+                 player.Tearsx = player.x+(10*player.dir)
+                 tears.append(Tears(player.Tearsx,player.Tearsy,-1))
+
+
 
 
 
@@ -82,7 +96,9 @@ def collide(a, b):
 
 def update(frame_time):
     player.update(frame_time)
-
+    for member in tears:
+            member.update(frame_time)
+    background.update(frame_time)
   #  for ball in balls:
    #     if collide(boy, ball):
     #        balls.remove(ball)
@@ -96,6 +112,8 @@ def draw(frame_time):
     player.draw_bb()
     player.draw()
 
+    for member in tears:
+        member.draw()
 
     update_canvas()
 
