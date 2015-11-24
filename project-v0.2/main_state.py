@@ -1,44 +1,46 @@
 from pico2d import *
 
 import game_framework
-from tears import Tears
-from background import Stage1
+from tears import Tears,Firetears
+from background import Stage1,Heart,Item
 from player import Player
 from boy import Boy # import Boy class from boy.py
 from ball import Ball, BigBall
 from grass import Grass
+from monster import Devileye
 
-
-
+windowx,windowy=800,600
 name = "main_state"
 tears=None
-boy = None
-balls = None
-big_balls = None
-grass = None
 background=None
+gamestatus=1
+firetears = 0
+
 def create_world():
-    global boy, grass, balls,background,player,tears
-    player=Player()
+    global background,player,tears,heart,item,devileye
+    devileye=Devileye(1200)
+    item = Item()
+    player=Player(windowy)
+    heart= Heart(windowx,windowy)
     tears = []
-    background = Stage1(800,600)
-    big_balls = [BigBall() for i in range(10)]
-    balls = [Ball() for i in range(10)]
-    balls = big_balls + balls
+    background = Stage1(windowx,windowy)
+
 
 
 
 def destroy_world():
-    global boy, balls, grass,background
-
+    global background,heart,item,devileye
+    del(devileye)
+    del(item)
+    del(heart)
     del(background)
-    del(balls)
+
 
 
 
 
 def enter():
-    open_canvas(800,600)
+    open_canvas(windowx,windowy)
     hide_cursor()
     game_framework.reset_time()
     create_world()
@@ -58,16 +60,20 @@ def resume():
 
 
 def handle_events(frame_time):
+    global firetears
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
             game_framework.quit()
         else:
-            if (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE):
+            if (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE) or player.state ==player.DIE:
+                delay(1)
                 game_framework.quit()
             else:
                 player.handle_event(event)
-        if event.type==SDL_KEYDOWN and event.key== SDLK_SPACE:
+
+        if firetears == 0:
+            if event.type==SDL_KEYDOWN and event.key== SDLK_SPACE:
 
              player.Tearsy = player.y+20
              if player.state in (player.RIGHT_STAND, player.RIGHT_RUN):
@@ -77,8 +83,32 @@ def handle_events(frame_time):
              if player.state in (player.LEFT_STAND, player.LEFT_RUN):
                  player.Tearsx = player.x+(10*player.dir)
                  tears.append(Tears(player.Tearsx,player.Tearsy,-1))
+             for member in tears:
+                 member.fire()
+
+        if firetears == 1 :
+          if event.type==SDL_KEYDOWN and event.key== SDLK_SPACE:
+            player.Tearsy = player.y+10
+            if player.state in (player.RIGHT_STAND, player.RIGHT_RUN):
+               player.Tearsx = player.x+(10*player.dir)
+               tears.append(Firetears(player.Tearsx,player.Tearsy,1))
+
+            if player.state in (player.LEFT_STAND, player.LEFT_RUN):
+                 player.Tearsx = player.x+(10*player.dir)
+                 tears.append(Firetears(player.Tearsx,player.Tearsy,-1))
+            for member in tears:
+                 member.fire()
+
+        if event.type==SDL_KEYDOWN and event.key== SDLK_s:
+              player.wound()
+              heart.heartcount-=1
+              player.hp-=1
 
 
+        if event.type==SDL_KEYDOWN and event.key == SDLK_d:
+              item.count=0
+              firetears=1
+              print(firetears,item.count)
 
 
 
@@ -96,9 +126,24 @@ def collide(a, b):
 
 def update(frame_time):
     player.update(frame_time)
+    devileye.update(frame_time)
     for member in tears:
             member.update(frame_time)
     background.update(frame_time)
+    if collide(player,devileye) :
+        if player.woundframe==0:
+         player.wound()
+         player.hp-=1
+         heart.heartcount-=1
+
+    for member in tears:
+        if collide(member,devileye):
+            devileye.hp+= -1
+
+            if(devileye.hp==0):
+
+                print(devileye.hp)
+            tears.remove(member)
   #  for ball in balls:
    #     if collide(boy, ball):
     #        balls.remove(ball)
@@ -108,13 +153,17 @@ def update(frame_time):
 
 def draw(frame_time):
     clear_canvas()
-    background.draw()
-    player.draw_bb()
+    background.draw(player.viewx)
+    #player.draw_bb()
     player.draw()
-
+    devileye.draw(player.viewx)
+    #devileye.draw_bb()
+    #ui는 맨마지막에 그린다.
+    heart.draw(windowx,windowy)
+    item.draw(windowx,windowy)
     for member in tears:
         member.draw()
-
+       # member.draw_bb()
     update_canvas()
 
 

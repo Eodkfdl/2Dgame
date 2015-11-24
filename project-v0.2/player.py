@@ -15,38 +15,55 @@ class Player:
 
     image = None
     eat_sound = None
+    wound_sound = None
+    die_sound = None
+    DIE,ITEM_GETTING,WOUND, LEFT_RUN, RIGHT_RUN, LEFT_STAND, RIGHT_STAND = 0, 1, 2, 3,4,5,6
 
-    LEFT_RUN, RIGHT_RUN, LEFT_STAND, RIGHT_STAND = 0, 1, 2, 3
-
-    def __init__(self):
-        self.x, self.y = 0, 90
+    def __init__(self,h):
+        self.viewx=0
+        self.x, self.y = 400, h/3
+        self.hp=3
         self.frame = random.randint(0, 7)
         self.life_time = 0.0
+
         self.total_frames = 0.0
+        self.prestate=self.RIGHT_STAND
         self.dir = 0
-        self.RL=3
+        self.RL=4
         self.state = self.RIGHT_STAND
-        self.eatn=0
+        self.woundframe=0
+        self.woundtotalframe=0.0
+        self.woundRL=0
         self.jump =0
         self.Jumpstat=0
         self.Tearsx=0
         self.Tearsy=0
         if Player.image == None:
-            Player.image = load_image('image\\isaac.png')
+            Player.image = load_image('image\\isaac1.png')
         if Player.eat_sound == None:
-            Player.eat_sound = load_wav('sound\\/탬습득.wav')
+            Player.eat_sound = load_wav('sound\\탬습득.wav')
             Player.eat_sound.set_volume(128)
+        if Player.wound_sound==None:
+            Player.wound_sound= load_wav('sound\\맞는소리 (1).wav')
+            Player.wound_sound.set_volume(80)
+        if Player.die_sound== None:
+            Player.die_sound = load_wav('sound\\플레이어사망.wav')
+            Player.die_sound.set_volume(128)
 
-    def eat(self, ball):
+    def eat(self, item):
         self.eat_sound.play()
-        self.eatn=1
+    def wound(self):
+
+         self.prestate=self.state
+         self.state=self.WOUND
+         self.wound_sound.play()
+
+    def die(self):
+        self.die_sound.play()
+
     def update(self, frame_time):
         def clamp(minimum, x, maximum):
             return max(minimum, min(x, maximum))
-        if self.eatn == 0:
-            if self.state in (self.RIGHT_RUN, self.LEFT_RUN):
-                pass #self.bgm.play()
-        self.eatn = 0
 
         self.life_time += frame_time
         distance = Player.RUN_SPEED_PPS * frame_time
@@ -54,12 +71,32 @@ class Player:
          self.total_frames += Player.FRAMES_PER_ACTION * Player.ACTION_PER_TIME * frame_time
         if(self.dir==0):
             self.total_frames = 0
+        #if(self.state==self.WOUND):
+           # self.x = self.x +self.woundRL*-1*self.woundframe/5
 
         self.frame = int(self.total_frames) % 5
 
-        self.x += (self.dir * distance)
+        if(self.state==self.WOUND):
+            self.woundtotalframe+=Player.FRAMES_PER_ACTION * Player.ACTION_PER_TIME * frame_time
+            self.woundframe= int(self.woundtotalframe)
 
-        self.x = clamp(0, self.x, 800)#맵밖으로 못나가게 하는거
+            if(self.woundframe>3):
+
+                self.woundframe=0
+                self.woundtotalframe=0
+                if(self.prestate==self.RIGHT_RUN):
+                    self.state=self.RIGHT_STAND
+                if(self.prestate==self.LEFT_RUN):
+                    self.state=self.LEFT_STAND
+                else: self.state=self.prestate
+
+        self.x += (self.dir * distance)
+        if(self.x>=500 or self.x<=100):
+            self.viewx += self.dir
+
+
+
+        self.x = clamp(100, self.x, 600)#맵밖으로 못나가게 하는거
 
         if(self.Jumpstat==1):
             self.jump+=1
@@ -71,9 +108,15 @@ class Player:
             if (self.jump==139) :
                 self.Jumpstat=0
                 self.jump=0
+        if self.hp==0:
+            self.state=self.DIE
     def draw(self):
-        self.image.clip_draw(self.frame * 30, self.RL * 35, 30, 35, self.x, self.y,60,60)
-
+        if self.state in (self.RIGHT_STAND, self.LEFT_STAND, self.RIGHT_RUN,self.LEFT_RUN):
+          self.image.clip_draw(self.frame * 30, self.RL * 35, 30, 35, self.x, self.y,60,60)
+        if self.state ==self.WOUND :
+           self.image.clip_draw(self.woundframe * 32, 35, 32, 35, self.x, self.y,60,60)
+        if self.state ==self.DIE :
+           self.image.clip_draw( 0, 0, 38, 35, self.x, self.y,60,60)
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
 
@@ -85,20 +128,23 @@ class Player:
             if self.state in (self.RIGHT_STAND, self.LEFT_STAND, self.RIGHT_RUN):
                 self.state = self.LEFT_RUN
                 self.dir = -1
-                self.RL=2
+                self.RL=3
+                self.woundRL=1
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_RIGHT):
             if self.state in (self.RIGHT_STAND, self.LEFT_STAND, self.LEFT_RUN):
                 self.state = self.RIGHT_RUN
                 self.dir = 1
-                self.RL=3
+                self.RL=4
+                self.woundRL=-1
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_LEFT):
-            if self.state in (self.LEFT_RUN,):
+            if self.state in (self.LEFT_RUN, self.WOUND,):
                 self.state = self.LEFT_STAND
                 self.dir = 0
-
+                self.woundRL=-1
         elif (event.type, event.key) == (SDL_KEYUP, SDLK_RIGHT):
-            if self.state in (self.RIGHT_RUN,):
+            if self.state in (self.RIGHT_RUN,self.WOUND,):
                 self.state = self.RIGHT_STAND
                 self.dir = 0
+                self.woundRL=1
         if event.type==SDL_KEYUP and event.key== SDLK_a and self.Jumpstat==0:
             self.Jumpstat=1
