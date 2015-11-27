@@ -100,6 +100,8 @@ def handle_events(frame_time):
                  member.fire()
 
         if event.type==SDL_KEYDOWN and event.key== SDLK_s:
+            if player.woundstate==0:
+              player.woundstate=1
               player.wound()
               heart.heartcount-=1
               player.hp-=1
@@ -130,15 +132,16 @@ def update(frame_time):
     for member in tears:
             member.update(frame_time)
     background.update(frame_time)
-    if collide(player,devileye) :
-        if player.woundframe==0:
-         player.wound()
-         player.hp-=1
-         heart.heartcount-=1
+    if collide(player,devileye) and player.woundstate==0:
+              player.woundstate=1
+              player.wound()
+              heart.heartcount-=1
+              player.hp-=1
+
 
     for member in tears:
         if collide(member,devileye):
-            devileye.hp+= -1
+            devileye.hp-= 1
 
             if(devileye.hp==0):
 
