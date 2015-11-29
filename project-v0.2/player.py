@@ -120,6 +120,7 @@ class Player:
            self.image.clip_draw(self.woundframe * 32, 35, 32, 35, self.x, self.y,60,60)
         if self.state ==self.DIE  :
            self.image.clip_draw( 0, 0, 38, 35, self.x, self.y,60,60)
+           self.die()
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
 
