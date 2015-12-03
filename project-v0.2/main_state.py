@@ -142,11 +142,12 @@ def update(frame_time):
     for member in tears:
         if collide(member,devileye):
             devileye.hp-= 1
-
+            member.frame=1
             if(devileye.hp==0):
 
                 print(devileye.hp)
-            tears.remove(member)
+            if member.frame>4:
+                tears.remove(member)
   #  for ball in balls:
    #     if collide(boy, ball):
     #        balls.remove(ball)

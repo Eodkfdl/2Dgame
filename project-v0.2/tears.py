@@ -12,6 +12,7 @@ class Tears:
         self.dmg=1;
         self.crush=0
         self.frame = 0
+        self.framea=0
         self.tvx=dir
         self.rd=0
         self.pi=3.141592
@@ -27,6 +28,11 @@ class Tears:
     def update(self,frame_time):
         def clamp(minimum, x, maximum):
             return max(minimum, min(x, maximum))
+
+        if self.frame>=1:
+           self.framea+=1
+           self.frame = (self.framea)%3+1
+
         self.rd+=1
         self.x += self.tvx*frame_time*500 + math.cos(self.rd)
         self.y -= 5*math.sin(self.rd)
