@@ -17,8 +17,12 @@ gamestatus=1
 firetears = 0
 
 def create_world():
-    global background,player,tears,heart,item,devileye
-    devileye=Devileye(1200)
+    global background,player,tears,heart,item,devileyes
+    devileyes=[]
+
+    devileyes.append(Devileye(3000))
+    devileyes.append(Devileye(2300))
+    devileyes.append(Devileye(1200))
     item = Item()
     player=Player(windowy)
     heart= Heart(windowx,windowy)
@@ -128,15 +132,18 @@ def collide(a, b):
 
 def update(frame_time):
     player.update(frame_time)
-    devileye.update(frame_time)
-    for member in tears:
-            member.update(frame_time)
-    background.update(frame_time)
-    if collide(player,devileye) and player.woundstate==0:
+    for member in devileyes:
+        member.update(frame_time)
+        if collide(player,member) and player.woundstate==0:
               player.woundstate=1
               player.wound()
               heart.heartcount-=1
               player.hp-=1
+    for member in tears:
+            member.update(frame_time)
+    background.update(frame_time)
+
+
 
 
     for member in tears:
@@ -160,7 +167,8 @@ def draw(frame_time):
     background.draw(player.viewx)
     #player.draw_bb()
     player.draw()
-    devileye.draw(player.viewx)
+    for member in devileyes:
+       member.draw(player.viewx)
     #devileye.draw_bb()
     #ui는 맨마지막에 그린다.
     heart.draw(windowx,windowy)
