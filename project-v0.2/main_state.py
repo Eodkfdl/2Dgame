@@ -5,6 +5,7 @@ from tears import Tears,Firetears
 from background import Stage1,Heart,Item
 from player import Player
 from boy import Boy # import Boy class from boy.py
+from block import Basic
 from ball import Ball, BigBall
 from grass import Grass
 from monster import Devileye
@@ -12,14 +13,17 @@ from monster import Devileye
 windowx,windowy=800,600
 name = "main_state"
 tears=None
+bricks=None
 background=None
 gamestatus=1
 firetears = 0
 
 def create_world():
-    global background,player,tears,heart,item,devileyes
+    global background,player,tears,heart,item,devileyes,bricks
     devileyes=[]
-
+    bricks=[]
+    bricks.append((0,60))
+    bricks.append((1300,60))
     devileyes.append(Devileye(3000))
     devileyes.append(Devileye(2300))
     devileyes.append(Devileye(1200))
@@ -34,7 +38,12 @@ def create_world():
 
 def destroy_world():
     global background,heart,item,devileye
-    del(devileye)
+    for member in tears:
+        del(member)
+    for member in bricks:
+        del(member)
+    for member in devileyes:
+        del(member)
     del(item)
     del(heart)
     del(background)
