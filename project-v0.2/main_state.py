@@ -17,16 +17,18 @@ bricks=None
 background=None
 gamestatus=1
 firetears = 0
-
+stage=1
 def create_world():
     global background,player,tears,heart,item,devileyes,bricks
     devileyes=[]
     bricks=[]
-    bricks.append((0,60))
-    bricks.append((1300,60))
-    devileyes.append(Devileye(3000))
-    devileyes.append(Devileye(2300))
-    devileyes.append(Devileye(1200))
+    for i in range(1,100):
+        bricks.append(Basic(i*60,windowy/3-60))
+    if(stage==1):
+        devileyes.append(Devileye(4500))
+        devileyes.append(Devileye(3000))
+        devileyes.append(Devileye(2300))
+        devileyes.append(Devileye(1200))
     item = Item()
     player=Player(windowy)
     heart= Heart(windowx,windowy)
@@ -156,12 +158,13 @@ def update(frame_time):
 
 
     for member in tears:
-        if collide(member,devileye):
-            devileye.hp-= 1
-            member.frame=1
-            if(devileye.hp==0):
+        for mem in devileyes :
+            if collide(member,mem):
+                mem.hp-= 1
+                member.frame=1
+            if(mem.hp==0):
 
-                print(devileye.hp)
+                print(mem.hp)
             if member.frame>4:
                 tears.remove(member)
   #  for ball in balls:
@@ -176,14 +179,19 @@ def draw(frame_time):
     background.draw(player.viewx)
     #player.draw_bb()
     player.draw()
+    for member in bricks:
+        member.draw(player.viewx)
+
     for member in devileyes:
        member.draw(player.viewx)
     #devileye.draw_bb()
     #ui는 맨마지막에 그린다.
-    heart.draw(windowx,windowy)
-    item.draw(windowx,windowy)
+
+
     for member in tears:
         member.draw()
+    heart.draw(windowx,windowy)
+    item.draw(windowx,windowy)
        # member.draw_bb()
     update_canvas()
 

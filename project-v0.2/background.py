@@ -1,29 +1,36 @@
 import random
 
 from pico2d import *
+
+
 class Heart:
 
     def __init__(self,w,h):
         self.image = load_image('image///heart.png')
+        self.back =load_image('image//black.png')
 
         self.heartcount=3
 
     def draw(self,w,h):
+        self.back.draw(400,600,w,200)
         self.image.clip_draw( 0, self.heartcount*12, 45, 12, w/16, h-h/16,w/8,h/12)
 
     def __del__(self):
         del self.image
+        del self.back
 
 
 class Item:
     def __init__(self):
         self.image = load_image('image///item.png')
+        self.back =load_image('image//black.png')
         self.count=1
     def draw(self,w,h):
+        self.back.draw(400,0,w,200)
         self.image.clip_draw( 30*self.count, 0, 30, 35, (w/16), h/8,w/12,h/12)
     def __del__(self):
         del self.image
-
+        del self.back
 
 class Stage1:
 
@@ -49,7 +56,7 @@ class Stage1:
         x=int(self.left)
         w=min(self.image.w-x,self.screen_width)
         self.view=int(camx/32)
-        self.image.clip_draw(self.view,0,60,272,400,300,800,600)
+        self.image.clip_draw(self.view,0,60,272,400,300,800,400)
 
 
 

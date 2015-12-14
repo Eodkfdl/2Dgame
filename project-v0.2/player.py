@@ -76,8 +76,10 @@ class Player:
 
 
         self.x += (self.dir * distance)
-        if(self.x>=500 or self.x<=100):
+
+        if(self.x>=500 or self.x<=200):
             self.viewx += self.dir
+        self.viewx= clamp(200,self.viewx,15000)
 
         if(self.woundstate==1):
             print(self.woundstate)
