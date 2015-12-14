@@ -17,7 +17,7 @@ class Basic :
         self.image.clip_draw( 0, 0, 985, 63, self.x-camx, self.y,60,60)
         self.realx=self.x-camx
     def get_bb(self):
-        return self.realx - 496, self.y - 30, self.realx + 496, self.y + 30
+        return self.realx - 30, self.y - 30, self.realx + 30, self.y + 30
 
     def draw_bb(self):
         draw_rectangle(*self.get_bb())

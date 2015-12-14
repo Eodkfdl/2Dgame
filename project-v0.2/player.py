@@ -20,7 +20,11 @@ class Player:
     DIE,ITEM_GETTING,WOUND, LEFT_RUN, RIGHT_RUN, LEFT_STAND, RIGHT_STAND = 0, 1, 2, 3,4,5,6
 
     def __init__(self,h):
+        self.down=1
+        self.move=1
         self.viewx=0
+        self.blockmx=0
+        self.blockmy=0
         self.x, self.y = 400, h/3
         self.hp=3
         self.frame = random.randint(0, 7)
@@ -61,6 +65,7 @@ class Player:
 
     def update(self, frame_time):
         def clamp(minimum, x, maximum):
+
             return max(minimum, min(x, maximum))
 
         self.life_time += frame_time
@@ -74,9 +79,15 @@ class Player:
         self.frame = int(self.total_frames) % 5
 
 
-
+        if(self.move==0):
+            self.x=min(self.x,self.blockmx)
+            print("a")
         self.x += (self.dir * distance)
+        if(self.down==1 ):
+         self.y-=1
 
+        self.down=1
+        self.move=1
         if(self.x>=500 or self.x<=200):
             self.viewx += self.dir
         self.viewx= clamp(200,self.viewx,15000)
@@ -101,13 +112,10 @@ class Player:
         if(self.Jumpstat==1):
             self.jump+=1
             if (self.jump<70) :
-                self.y+=1
-            if (self.jump>70) :
-                self.y-=1
+                self.y+=2.5
 
-            if (self.jump==139) :
-                self.Jumpstat=0
-                self.jump=0
+
+
 
         if self.hp == 0:
             self.woundstate=1
@@ -127,7 +135,7 @@ class Player:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 30, self.y - 35, self.x + 30, self.y + 35
+        return self.x - 30, self.y - 30, self.x + 30, self.y + 30
 
     def handle_event(self, event):
         if (event.type, event.key) == (SDL_KEYDOWN, SDLK_LEFT):
@@ -153,4 +161,5 @@ class Player:
                 self.dir = 0
 
         if event.type==SDL_KEYUP and event.key== SDLK_a and self.Jumpstat==0:
+            print(self.Jumpstat)
             self.Jumpstat=1

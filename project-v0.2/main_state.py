@@ -22,8 +22,19 @@ def create_world():
     global background,player,tears,heart,item,devileyes,bricks
     devileyes=[]
     bricks=[]
-    for i in range(1,100):
-        bricks.append(Basic(i*60,windowy/3-60))
+    for i in range(1,12):
+        bricks.append(Basic(i*60,windowy/3-70))
+
+    bricks.append(Basic(720,windowy/3-10))
+    bricks.append(Basic(780,windowy/3-10))
+    bricks.append(Basic(720,windowy/3-10))
+    bricks.append(Basic(780,windowy/3+50))
+    bricks.append(Basic(840,windowy/3+50))
+    bricks.append(Basic(840,windowy/3-10))
+    for i in range(14,15 ):
+        bricks.append(Basic(i*60,windowy/3-70))
+
+
     if(stage==1):
         devileyes.append(Devileye(4500))
         devileyes.append(Devileye(3000))
@@ -167,6 +178,25 @@ def update(frame_time):
                 print(mem.hp)
             if member.frame>4:
                 tears.remove(member)
+
+    for member in  bricks:
+        if collide(member,player) :
+           # player.down=0
+           if(player.x<member.realx+30 and player.x>member.realx-30) and player.y>member.y+30:
+                player.y= clamp(member.y+60,player.y,member.y+120)
+                player.Jumpstat=0
+                player.jump=0
+
+           if (player.y<member.y+30 and player.y>member.y-30) and (player.x<member.realx) :
+                player.x=clamp(0,player.x,member.realx-60)
+                print("맴버",member.realx)
+                print(player.x)
+           if (player.y<member.y+30 and player.y>member.y-30) and (player.x>member.realx) :
+                player.x=clamp(member.realx+60,player.x,member.realx+150)
+                print("맴버",member.realx)
+                print(player.x)
+
+
   #  for ball in balls:
    #     if collide(boy, ball):
     #        balls.remove(ball)
@@ -179,9 +209,10 @@ def draw(frame_time):
     background.draw(player.viewx)
     #player.draw_bb()
     player.draw()
+    player.draw_bb()
     for member in bricks:
         member.draw(player.viewx)
-
+        member.draw_bb()
     for member in devileyes:
        member.draw(player.viewx)
     #devileye.draw_bb()
@@ -190,6 +221,7 @@ def draw(frame_time):
 
     for member in tears:
         member.draw()
+
     heart.draw(windowx,windowy)
     item.draw(windowx,windowy)
        # member.draw_bb()
