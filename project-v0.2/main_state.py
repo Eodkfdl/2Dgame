@@ -4,11 +4,9 @@ import game_framework
 from tears import Tears,Firetears
 from background import Stage1,Heart,Item
 from player import Player
-from boy import Boy # import Boy class from boy.py
 from block import Basic
-from ball import Ball, BigBall
-from grass import Grass
-from monster import Devileye
+
+from monster import Devileye,Peep,Ghost
 
 windowx,windowy=800,600
 name = "main_state"
@@ -19,9 +17,12 @@ gamestatus=1
 firetears = 0
 stage=1
 def create_world():
-    global background,player,tears,heart,item,devileyes,bricks
+    global background,player,tears,heart,item,devileyes,bricks,peep,ghost
     devileyes=[]
+    peep=[]
+    ghost=[]
     bricks=[]
+
     for i in range(1,12):
         bricks.append(Basic(i*60,windowy/3-70))
 
@@ -33,7 +34,8 @@ def create_world():
     bricks.append(Basic(840,windowy/3-10))
     for i in range(14,15 ):
         bricks.append(Basic(i*60,windowy/3-70))
-
+    for i in range(6,9):
+        ghost.append(Ghost(i*120))
 
     if(stage==1):
         devileyes.append(Devileye(4500))
@@ -56,6 +58,8 @@ def destroy_world():
     for member in bricks:
         del(member)
     for member in devileyes:
+        del(member)
+    for member in peep:
         del(member)
     del(item)
     del(heart)
@@ -163,6 +167,21 @@ def update(frame_time):
               player.hp-=1
     for member in tears:
             member.update(frame_time)
+    for member in peep:
+        member.update(frame_time)
+        if collide(player,member) and player.woundstate==0:
+              player.woundstate=1
+              player.wound()
+              heart.heartcount-=1
+              player.hp-=1
+    for member in ghost:
+        member.update(frame_time)
+        if collide(player,member) and player.woundstate==0:
+              player.woundstate=1
+              player.wound()
+              heart.heartcount-=1
+              player.hp-=1
+
     background.update(frame_time)
 
 
@@ -174,9 +193,22 @@ def update(frame_time):
                 mem.hp-= 1
                 member.frame=1
             if(mem.hp==0):
-
+                devileyes.remove(mem)
                 print(mem.hp)
-            if member.frame>4:
+        for mem in peep :
+           if collide(member,mem):
+
+                member.frame= member.frame+1
+                mem.hp-= 1
+           if(mem.hp==0):
+                peep.remove(mem)
+        for mem in ghost :
+           if collide(member,mem):
+                mem.hp-= 1
+                member.frame+=1
+           if(mem.hp==0):
+                ghost.remove(mem)
+        if member.frame>4:
                 tears.remove(member)
 
     for member in  bricks:
@@ -189,25 +221,16 @@ def update(frame_time):
 
            if (player.y<member.y+30 and player.y>member.y-30) and (player.x<member.realx) :
                 player.x=clamp(0,player.x,member.realx-60)
-                print("맴버",member.realx)
-                print(player.x)
+
            if (player.y<member.y+30 and player.y>member.y-30) and (player.x>member.realx) :
                 player.x=clamp(member.realx+60,player.x,member.realx+150)
-                print("맴버",member.realx)
-                print(player.x)
-
-
-  #  for ball in balls:
-   #     if collide(boy, ball):
-    #        balls.remove(ball)
-     #       boy.eat(ball)
 
 
 
 def draw(frame_time):
     clear_canvas()
     background.draw(player.viewx)
-    #player.draw_bb()
+
     player.draw()
     player.draw_bb()
     for member in bricks:
@@ -215,9 +238,12 @@ def draw(frame_time):
         member.draw_bb()
     for member in devileyes:
        member.draw(player.viewx)
-    #devileye.draw_bb()
-    #ui는 맨마지막에 그린다.
-
+    for member in peep:
+       member.draw(player.viewx)
+       member.draw_bb()
+    for member in ghost:
+       member.draw(player.viewx)
+       member.draw_bb()
 
     for member in tears:
         member.draw()

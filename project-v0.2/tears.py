@@ -29,9 +29,6 @@ class Tears:
         def clamp(minimum, x, maximum):
             return max(minimum, min(x, maximum))
 
-        if self.frame>=1:
-           self.framea+=1
-           self.frame = (self.framea)%3+1
 
         self.rd+=1
         self.x += self.tvx*frame_time*500 + math.cos(self.rd)

@@ -112,12 +112,17 @@ class Player:
         if(self.Jumpstat==1):
             self.jump+=1
             if (self.jump<70) :
-                self.y+=2.5
+                self.y+=2
 
 
 
 
         if self.hp == 0:
+            self.woundstate=1
+            self.prestate=0
+            self.state=self.DIE
+            self.die
+        if self.y==100:
             self.woundstate=1
             self.prestate=0
             self.state=self.DIE
@@ -135,7 +140,7 @@ class Player:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 30, self.y - 30, self.x + 30, self.y + 30
+        return self.x - 28, self.y - 30, self.x + 28, self.y + 30
 
     def handle_event(self, event):
         if (event.type, event.key) == (SDL_KEYDOWN, SDLK_LEFT):
