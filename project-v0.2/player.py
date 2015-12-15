@@ -26,6 +26,7 @@ class Player:
         self.blockmx=0
         self.blockmy=0
         self.x, self.y = 400, h/3
+        self.size=30
         self.hp=3
         self.frame = random.randint(0, 7)
         self.life_time = 0.0
@@ -41,6 +42,7 @@ class Player:
         self.Jumpstat=0
         self.Tearsx=0
         self.Tearsy=0
+        self.mujuck=0
         if Player.image == None:
             Player.image = load_image('image\\isaac1.png')
         if Player.eat_sound == None:
@@ -74,7 +76,8 @@ class Player:
          self.total_frames += Player.FRAMES_PER_ACTION * Player.ACTION_PER_TIME * frame_time
         if(self.dir==0):
             self.total_frames = 0
-
+        if (self.mujuck>0):
+            self.hp=3
 
         self.frame = int(self.total_frames) % 5
 
@@ -130,17 +133,17 @@ class Player:
     def draw(self):
 
         if self.state in (self.RIGHT_STAND, self.LEFT_STAND, self.RIGHT_RUN,self.LEFT_RUN):
-          self.image.clip_draw(self.frame * 30, self.RL * 35, 30, 35, self.x, self.y,60,60)
+          self.image.clip_draw(self.frame * 30, self.RL * 35, 30, 35,self.x, self.y,self.size*2,self.size*2)
         if self.state == self.WOUND :
-           self.image.clip_draw(self.woundframe * 32, 35, 32, 35, self.x, self.y,60,60)
+           self.image.clip_draw(self.woundframe * 32, 35, 32, 35, self.x, self.y,self.size*2,self.size*2)
         if self.state ==self.DIE  :
-           self.image.clip_draw( 0, 0, 38, 35, self.x, self.y,60,60)
+           self.image.clip_draw( 0, 0, 38, 35, self.x, self.y,self.size*2,self.size*2)
            self.die()
     def draw_bb(self):
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 28, self.y - 30, self.x + 28, self.y + 30
+        return self.x -self.size, self.y - self.size, self.x +self.size, self.y + self.size
 
     def handle_event(self, event):
         if (event.type, event.key) == (SDL_KEYDOWN, SDLK_LEFT):

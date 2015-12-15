@@ -29,6 +29,8 @@ class Tears:
         def clamp(minimum, x, maximum):
             return max(minimum, min(x, maximum))
 
+        if(self.framea==1):
+            self.frame+=1
 
         self.rd+=1
         self.x += self.tvx*frame_time*500 + math.cos(self.rd)
@@ -82,6 +84,7 @@ class Firetears:
         def clamp(minimum, x, maximum):
             return max(minimum, min(x, maximum))
         self.rd+=1
+
         self.n += Firetears.FRAMES_PER_ACTION * Firetears.ACTION_PER_TIME * frame_time
         self.frame = int(self.n)%4
         self.x += self.tvx*frame_time*500 + math.cos(self.rd)

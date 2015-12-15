@@ -8,9 +8,8 @@ class Heart:
     def __init__(self,w,h):
         self.image = load_image('image///heart.png')
         self.back =load_image('image//black.png')
-
+        self.mujuck=0
         self.heartcount=3
-
     def draw(self,w,h):
         self.back.draw(400,600,w,200)
         self.image.clip_draw( 0, self.heartcount*12, 45, 12, w/16, h-h/16,w/8,h/12)
@@ -24,7 +23,7 @@ class Item:
     def __init__(self):
         self.image = load_image('image///item.png')
         self.back =load_image('image//black.png')
-        self.count=1
+        self.count=0
     def draw(self,w,h):
         self.back.draw(400,0,w,200)
         self.image.clip_draw( 30*self.count, 0, 30, 35, (w/16), h/8,w/12,h/12)
